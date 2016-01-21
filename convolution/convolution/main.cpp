@@ -81,7 +81,8 @@ int main()
        // load named kernel from opencl source
        cl::Kernel kernel_gmem(program, "gpu_convolution_gmem");
        cl::make_kernel<cl::Buffer &, cl::Buffer&, cl::Buffer&, int, int> kernel_functor(kernel_gmem);
-       cl::EnqueueArgs eargs(queue, cl::NullRange, cl::NDRange(n, n), cl::NDRange(16, 16));
+       int size = n % 16 == 0 ? n : n + (16 - n % 16);
+       cl::EnqueueArgs eargs(queue, cl::NullRange, cl::NDRange(size, size), cl::NDRange(16, 16));
        kernel_functor(eargs, dev_input, dev_mask, dev_output, m, n);
 
        vector<float> C(n * n, 1.);
